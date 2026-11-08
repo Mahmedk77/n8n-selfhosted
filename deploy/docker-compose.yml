@@ -1,0 +1,87 @@
+# Production (VPS) stack: postgres + n8n + caddy (TLS reverse proxy).
+# Only caddy publishes ports. Docker-published ports bypass UFW, so postgres
+# and n8n stay on the internal network and are reachable only through caddy.
+# Secrets come from deploy/.env (see .env.example), never hardcoded here.
+
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  n8n:
+    # TODO: pin to a tested version tag (e.g. n8nio/n8n:1.x.y) before go-live.
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    expose:
+      - "5678"
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
+      DB_POSTGRESDB_USER: ${POSTGRES_USER}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
+      N8N_HOST: ${N8N_DOMAIN}
+      N8N_PROTOCOL: https
+      WEBHOOK_URL: https://${N8N_DOMAIN}/
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      N8N_PROXY_HOPS: 1
+      GENERIC_TIMEZONE: Asia/Karachi
+      TZ: Asia/Karachi
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      N8N_DOMAIN: ${N8N_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # caddy_data holds the issued certificates; losing it forces re-issuance
+      # and can hit Let's Encrypt rate limits.
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - n8n
+    networks:
+      - internal
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+networks:
+  internal:
+
+volumes:
+  pg_data:
+  n8n_data:
+  caddy_data:
+  caddy_config:
