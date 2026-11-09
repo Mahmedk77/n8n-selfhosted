@@ -3,6 +3,8 @@
 # and n8n stay on the internal network and are reachable only through caddy.
 # Secrets come from deploy/.env (see .env.example), never hardcoded here.
 
+name: n8n
+
 services:
   postgres:
     image: postgres:15

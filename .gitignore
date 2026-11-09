@@ -1,6 +1,4 @@
 .env
-    *.dump
-
 *.dump
 .backup.env
 deploy/.env

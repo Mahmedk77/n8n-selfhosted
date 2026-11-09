@@ -62,11 +62,18 @@ if ! "${COMPOSE[@]}" exec -T postgres pg_restore --list < "$DUMP" > /dev/null; t
 fi
 log "dump OK ($(stat -c %s "$DUMP") bytes)"
 
-# Auth headers go through a curl config on a pipe so the key never appears in `ps`.
+# Legacy JWT keys (eyJ...) need both headers; new-style keys (sb_secret_...) only apikey.
+# Headers go through a curl config on a pipe so the key never appears in `ps`.
+auth_config() {
+  if [[ "$SUPABASE_SERVICE_KEY" == eyJ* ]]; then
+    printf 'header = "Authorization: Bearer %s"\n' "$SUPABASE_SERVICE_KEY"
+  fi
+  printf 'header = "apikey: %s"\n' "$SUPABASE_SERVICE_KEY"
+}
+
 log "uploading to bucket $SUPABASE_BUCKET"
 curl --silent --show-error --fail-with-body \
-  --config <(printf 'header = "Authorization: Bearer %s"\nheader = "apikey: %s"\n' \
-    "$SUPABASE_SERVICE_KEY" "$SUPABASE_SERVICE_KEY") \
+  --config <(auth_config) \
   -X POST \
   -H "Content-Type: application/octet-stream" \
   --data-binary "@$DUMP" \
