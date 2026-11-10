@@ -1,0 +1,110 @@
+{
+  "updatedAt": "2026-11-08T14:03:11.500Z",
+  "createdAt": "2026-11-08T13:54:49.537Z",
+  "id": "GNZfPw1b2jyhzBdL",
+  "name": "supabase-ping",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -112,
+        -64
+      ],
+      "id": "01f41d72-17e4-48c6-a7bb-453d5d058d59",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://zccqgbygjffkhhltyizr.supabase.co/rest/v1/posts?select=id&limit=1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        112,
+        80
+      ],
+      "id": "a7af90f9-24ad-4745-8af7-a400102f4b01",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "75NxUt8pgQaQ7e00",
+          "name": "Header Auth account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "bba1c7f0-6282-4e58-b291-4710f66acefe",
+  "activeVersionId": "bba1c7f0-6282-4e58-b291-4710f66acefe",
+  "versionCounter": 2,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-08T13:54:49.537Z",
+      "createdAt": "2026-11-08T13:54:49.537Z",
+      "role": "workflow:owner",
+      "workflowId": "GNZfPw1b2jyhzBdL",
+      "projectId": "oj4LhYVHy35A70Yy",
+      "project": {
+        "updatedAt": "2026-11-08T13:05:26.574Z",
+        "createdAt": "2026-11-08T12:49:09.869Z",
+        "id": "oj4LhYVHy35A70Yy",
+        "name": "muhammad ahmed <mak.212601@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "9afde7b0-40b9-4249-9b85-2b1aa1616a74"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "supabase-ping-test",
+    "description": ""
+  }
+}

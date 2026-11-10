@@ -1,0 +1,261 @@
+{
+  "updatedAt": "2026-11-10T12:11:58.161Z",
+  "createdAt": "2026-11-09T14:00:46.430Z",
+  "id": "rs9QnrMdyynV0NJS",
+  "name": "lead-enrichment",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "91f670b2-ee65-445c-b22e-0c8c3282d296",
+      "name": "Webhook",
+      "webhookId": "5b1ccea2-bd45-4eb1-980d-91fba6c52dce"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "   https://week-4-multi-agent-content-factory.vercel.app/api/agents/enrich",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"{{ $json.body.name }}\",\n  \"company\": \"{{ $json.body.company }}\",\n  \"email\": \"{{ $json.body.email }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        272,
+        0
+      ],
+      "id": "0944916a-b649-4289-a075-527de5d04946",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "M7ezR1H6K9kpl5ac",
+          "name": "Agent Key (Week-6)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1eb19b53-dbb0-499d-a386-9e93a6e1ff98",
+              "name": "name",
+              "value": "={{ $('Webhook').item.json.body.name }}",
+              "type": "string"
+            },
+            {
+              "id": "c9b1ec2a-b10b-4efe-9a6b-8fa44bc62572",
+              "name": "email",
+              "value": "={{ $('Webhook').item.json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "7606dbfd-3a15-44da-9eb3-c3c52bc44434",
+              "name": "company",
+              "value": "={{ $('Webhook').item.json.body.company }}",
+              "type": "string"
+            },
+            {
+              "id": "b711d353-8ea9-466d-9b34-2697297e4407",
+              "name": "company_size",
+              "value": "={{ $json.companySize }}",
+              "type": "string"
+            },
+            {
+              "id": "add11066-4cb4-4d66-8f67-d2959aa21abe",
+              "name": "industry",
+              "value": "={{ $json.industry }}",
+              "type": "string"
+            },
+            {
+              "id": "42f05541-9754-45c5-872b-2b701b1949ed",
+              "name": "tech_stack",
+              "value": "={{ $json.techStack }}",
+              "type": "array"
+            },
+            {
+              "id": "3011a099-aad4-4b6e-88d6-cd6dc38ceb14",
+              "name": "linkedin_summary",
+              "value": "={{ $json.linkedinSummary }}",
+              "type": "string"
+            },
+            {
+              "id": "24d1be0c-62ac-46d3-b7a0-2cc35922e76e",
+              "name": "pain_points",
+              "value": "={{ $json.potentialPainPoints }}",
+              "type": "array"
+            },
+            {
+              "id": "671f224e-254c-4505-9d77-3c3f3138d413",
+              "name": "fit_score",
+              "value": "={{ $json.fitScore }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        496,
+        0
+      ],
+      "id": "a7384d51-8562-4719-be2a-df41911ebebf",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "tableId": "leads",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "id": "69773980-f151-4eaa-9db6-71c5fa7afa12",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aBsRt8HqhNoItPmd",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#lead",
+          "mode": "name"
+        },
+        "text": "=New lead: {{ $('Edit Fields').item.json.name }} ({{ $('Edit Fields').item.json.company }})\nFit: {{ $('Edit Fields').item.json.fit_score }}/10 | {{ $('Edit Fields').item.json.industry }} | {{ $('Edit Fields').item.json.company_size }}\nTech: {{ $('Edit Fields').item.json.tech_stack.join(\", \") }}\nPain points: {{ $('Edit Fields').item.json.pain_points.join(\", \") }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        944,
+        0
+      ],
+      "id": "b67b3efe-d786-4b0c-9570-a0358a34dab3",
+      "name": "Send a message",
+      "webhookId": "9f6071e0-65b0-4f4d-b577-2285668ac0ca",
+      "credentials": {
+        "slackApi": {
+          "id": "oMTUVkf0bWYDd3Gi",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "OYd7DDF8xTFtwc1b",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "b20e5149-9010-48be-9299-801420c7aa1d",
+  "activeVersionId": "b20e5149-9010-48be-9299-801420c7aa1d",
+  "versionCounter": 133,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-09T14:00:46.430Z",
+      "createdAt": "2026-11-09T14:00:46.430Z",
+      "role": "workflow:owner",
+      "workflowId": "rs9QnrMdyynV0NJS",
+      "projectId": "oj4LhYVHy35A70Yy",
+      "project": {
+        "updatedAt": "2026-11-08T13:05:26.574Z",
+        "createdAt": "2026-11-08T12:49:09.869Z",
+        "id": "oj4LhYVHy35A70Yy",
+        "name": "muhammad ahmed <mak.212601@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "9afde7b0-40b9-4249-9b85-2b1aa1616a74"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version b20e5149",
+    "description": ""
+  }
+}

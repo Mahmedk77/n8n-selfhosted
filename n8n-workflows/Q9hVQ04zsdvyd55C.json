@@ -1,0 +1,103 @@
+{
+  "updatedAt": "2026-11-08T13:57:57.381Z",
+  "createdAt": "2026-11-08T13:14:21.820Z",
+  "id": "Q9hVQ04zsdvyd55C",
+  "name": "webhook-echo",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "echo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        -112,
+        16
+      ],
+      "id": "02423d6e-d346-4a7b-9ca1-47b6d013e8b4",
+      "name": "Webhook",
+      "webhookId": "68e8559a-2478-468f-848e-f81090325287"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "=   {{ JSON.stringify($json.body) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        112,
+        16
+      ],
+      "id": "e5236eab-4dfe-4ae2-b446-464533be9421",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "7fbd6115-b3d6-41ac-8068-f79dc1c1173f",
+  "activeVersionId": "7fbd6115-b3d6-41ac-8068-f79dc1c1173f",
+  "versionCounter": 50,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-08T13:14:21.820Z",
+      "createdAt": "2026-11-08T13:14:21.820Z",
+      "role": "workflow:owner",
+      "workflowId": "Q9hVQ04zsdvyd55C",
+      "projectId": "oj4LhYVHy35A70Yy",
+      "project": {
+        "updatedAt": "2026-11-08T13:05:26.574Z",
+        "createdAt": "2026-11-08T12:49:09.869Z",
+        "id": "oj4LhYVHy35A70Yy",
+        "name": "muhammad ahmed <mak.212601@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "9afde7b0-40b9-4249-9b85-2b1aa1616a74"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "webhook-echo-test",
+    "description": ""
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "updatedAt": "2026-11-10T11:46:07.445Z",
+  "createdAt": "2026-11-10T11:37:35.286Z",
+  "id": "OYd7DDF8xTFtwc1b",
+  "name": "error-handler",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -32
+      ],
+      "id": "e25f24ae-5c82-41f2-a6c9-40942fbc82ec",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#alert",
+          "mode": "name"
+        },
+        "text": "=Workflow failed: {{ $json.workflow.name }} Node: {{ $json.execution.lastNodeExecuted }} Error: {{ $json.execution.error.message }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        192,
+        -32
+      ],
+      "id": "dcfa8e4c-8b7f-4649-a084-6e86dcfe4861",
+      "name": "Send a message",
+      "webhookId": "04ea1ebb-47ec-4cb3-8c14-39708ba61f67",
+      "credentials": {
+        "slackApi": {
+          "id": "oMTUVkf0bWYDd3Gi",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "errors",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "workflow",
+              "fieldValue": "={{ $json.workflow.name }}"
+            },
+            {
+              "fieldId": "node",
+              "fieldValue": "={{ $json.execution.lastNodeExecuted }}"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $json.execution.error.message }}"
+            },
+            {
+              "fieldId": "execution_id",
+              "fieldValue": "={{ $json.execution.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -32
+      ],
+      "id": "54ee37cf-35a1-45c3-b678-b4e1023d87e9",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aBsRt8HqhNoItPmd",
+          "name": "Supabase account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "3941833e-ff31-4c03-afbd-c57930f1e95f",
+  "activeVersionId": "3941833e-ff31-4c03-afbd-c57930f1e95f",
+  "versionCounter": 25,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-10T11:37:35.286Z",
+      "createdAt": "2026-11-10T11:37:35.286Z",
+      "role": "workflow:owner",
+      "workflowId": "OYd7DDF8xTFtwc1b",
+      "projectId": "oj4LhYVHy35A70Yy",
+      "project": {
+        "updatedAt": "2026-11-08T13:05:26.574Z",
+        "createdAt": "2026-11-08T12:49:09.869Z",
+        "id": "oj4LhYVHy35A70Yy",
+        "name": "muhammad ahmed <mak.212601@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "9afde7b0-40b9-4249-9b85-2b1aa1616a74"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "v1",
+    "description": ""
+  }
+}
